@@ -18,9 +18,9 @@ extern motor bottomIntake;
 extern motor middleIntake;
 extern motor hopperIntake;
 
-extern digital_out scraperRight; 
-extern digital_out scraperLeft;
+extern digital_out scraper;
 extern digital_out hopperValve;
+// extern digital_out descore; 
 
 extern controller Controller; 
 //To set up a motor called LeftFront here, you'd use

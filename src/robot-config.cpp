@@ -7,7 +7,7 @@ using code = vision::code;
 // A global instance of brain used for printing to the V5 Brain screen.
 brain  Brain;
 
-motor frontLeft = motor(PORT20, ratio6_1, true); 
+motor frontLeft = motor(PORT18, ratio6_1, true); 
 motor MiddleLeft = motor(PORT15, ratio6_1, true);
 motor UpsidedownLeft = motor(PORT4, ratio6_1, false);
 
@@ -21,12 +21,13 @@ motor_group chassisRight = motor_group(frontRight, MiddleRight, UpsidedownRight)
 
 motor bottomIntake = motor(PORT11, ratio6_1, true);
 motor middleIntake = motor(PORT6, ratio6_1, true);;
-motor hopperIntake = motor(PORT10, ratio6_1, true);
+motor hopperIntake = motor(PORT10, ratio6_1, false);
 
-digital_out scraperRight = digital_out(Brain.ThreeWirePort.A);  //not put
-digital_out scraperLeft = digital_out(Brain.ThreeWirePort.A);  // not put
+digital_out scraper = digital_out(Brain.ThreeWirePort.A);  //not put
 
-digital_out hopperValve = digital_out(Brain.ThreeWirePort.A); // not put 
+digital_out hopperValve = digital_out(Brain.ThreeWirePort.G); // not put
+
+// digital_out descore = digital_out(Brain.ThreeWirePort.A); // Not put 
 
 controller Controller; 
 //The motor constructor takes motors as (port, ratio, reversed), so for example

@@ -22,23 +22,93 @@ competition Competition;
 /*  all the physical constants and values for your robot. You should         */
 /*  already have configured your motors.                                     */
 /*---------------------------------------------------------------------------*/
+  void reinstantiate(double driveValueEdit) {
+    Drive chassis(
+    TANK_ONE_FORWARD_ENCODER,
 
+    //Add the names of your Drive motors into the motor groups below, separated by commas, i.e. motor_group(Motor1,Motor2,Motor3).
+    //You will input whatever motor names you chose when you configured your robot using the sidebar configurer, they don't have to be "Motor1" and "Motor2".
+
+    //Left Motors:
+    motor_group(frontLeft,MiddleLeft,UpsidedownLeft),
+
+    //Right Motors:
+    motor_group(frontRight,MiddleRight,UpsidedownRight),
+
+    //Specify the PORT NUMBER of your inertial sensor, in PORT format (i.e. "PORT1", not simply "1"):
+    PORT19,
+
+    //Input your wheel diameter. (4" omnis are actually closer to 4.125"):
+    3.25,
+
+    //External ratio, must be in decimal, in the format of input teeth/output teeth.
+    //If your motor has an 84-tooth gear and your wheel has a 60-tooth gear, this value will be 1.4.
+    //If the motor drives the wheel directly, this value is 1:
+    driveValueEdit,
+
+    //Gyro scale, this is what your gyro reads when you spin the robot 360 degrees.
+    //For most cases 360 will do fine here, but this scale factor can be very helpful when precision is necessary.
+    350,
+
+    /*---------------------------------------------------------------------------*/
+    /*                                  PAUSE!                                   */
+    /*                                                                           */
+    /*  The rest of the drive constructor is for robots using POSITION TRACKING. */
+    /*  If you are not using position tracking, leave the rest of the values as  */
+    /*  they are.                                                                */
+    /*---------------------------------------------------------------------------*/
+
+    //If you are using ZERO_TRACKER_ODOM, you ONLY need to adjust the FORWARD TRACKER CENTER DISTANCE.
+
+    //FOR HOLONOMIC DRIVES ONLY: Input your drive motors by position. This is only necessary for holonomic drives, otherwise this section can be left alone.
+    //LF:      //RF:    
+    PORT1,     -PORT2,
+
+    //LB:      //RB: 
+    PORT3,     -PORT4,
+
+    //If you are using position tracking, this is the Forward Tracker port (the tracker which runs parallel to the direction of the chassis).
+    //If this is a rotation sensor, enter it in "PORT1" format, inputting the port below.
+    //If this is an encoder, enter the port as an integer. Triport A will be a "1", Triport B will be a "2", etc.
+    PORT16,
+
+    //Input the Forward Tracker diameter (reverse it to make the direction switch):
+    2.75,
+
+    //Input Forward Tracker center distance (a positive distance corresponds to a tracker on the right side of the robot, negative is left.)
+    //For a zero tracker tank drive with odom, put the positive distance from the center of the robot to the right side of the drive.
+    //This distance is in inches:
+    -2,
+
+    //Input the Sideways Tracker Port, following the same steps as the Forward Tracker Port:
+    1,
+
+    //Sideways tracker diameter (reverse to make the direction switch):
+    -2.75,
+
+    //Sideways tracker center distance (positive distance is behind the center of the robot, negative is in front):
+    5.5
+
+    );
+  }
+  
 Drive chassis(
 
-//Pick your drive setup from the list below:
-//ZERO_TRACKER_NO_ODOM
-//ZERO_TRACKER_ODOM
-//TANK_ONE_FORWARD_ENCODER
-//TANK_ONE_FORWARD_ROTATION
-//TANK_ONE_SIDEWAYS_ENCODER
-//TANK_ONE_SIDEWAYS_ROTATION
-//TANK_TWO_ENCODER
-//TANK_TWO_ROTATION
-//HOLONOMIC_TWO_ENCODER
-//HOLONOMIC_TWO_ROTATION
-//
-//Write it here:
-ZERO_TRACKER_NO_ODOM,
+    // Pick your drive setup from the list below:
+    // ZERO_TRACKER_NO_ODOM
+    // ZERO_TRACKER_ODOM
+    // TANK_ONE_FORWARD_ENCODER
+    // TANK_ONE_FORWARD_ROTATION
+    // TANK_ONE_SIDEWAYS_ENCODER
+    // TANK_ONE_SIDEWAYS_ROTATION
+    // TANK_TWO_ENCODER
+    // TANK_TWO_ROTATION
+    // HOLONOMIC_TWO_ENCODER
+    // HOLONOMIC_TWO_ROTATION
+    //
+    // Write it here:
+    // ZERO_TRACKER_NO_ODOM,
+TANK_ONE_FORWARD_ENCODER,
 
 //Add the names of your Drive motors into the motor groups below, separated by commas, i.e. motor_group(Motor1,Motor2,Motor3).
 //You will input whatever motor names you chose when you configured your robot using the sidebar configurer, they don't have to be "Motor1" and "Motor2".
@@ -62,7 +132,7 @@ PORT19,
 
 //Gyro scale, this is what your gyro reads when you spin the robot 360 degrees.
 //For most cases 360 will do fine here, but this scale factor can be very helpful when precision is necessary.
-360,
+350,
 
 /*---------------------------------------------------------------------------*/
 /*                                  PAUSE!                                   */
@@ -84,7 +154,7 @@ PORT3,     -PORT4,
 //If you are using position tracking, this is the Forward Tracker port (the tracker which runs parallel to the direction of the chassis).
 //If this is a rotation sensor, enter it in "PORT1" format, inputting the port below.
 //If this is an encoder, enter the port as an integer. Triport A will be a "1", Triport B will be a "2", etc.
-3,
+PORT16,
 
 //Input the Forward Tracker diameter (reverse it to make the direction switch):
 2.75,
@@ -171,34 +241,12 @@ void pre_auton() {
  * autons.cpp and declared in autons.h.
  */
 
+ 
 void autonomous(void) {
   auto_started = true;
-  switch(current_auton_selection){ 
-    case 0:
-      drive_test();
-      break;
-    case 1:         
-      drive_test();
-      break;
-    case 2:
-      turn_test();
-      break;
-    case 3:
-      swing_test();
-      break;
-    case 4:
-      full_test();
-      break;
-    case 5:
-      odom_test();
-      break;
-    case 6:
-      tank_odom_test();
-      break;
-    case 7:
-      holonomic_odom_test();
-      break;
- }
+  blue_right_awp();
+  // blue_left_awp();
+  // chassis.drive_distance(2); 
 }
 
 /*---------------------------------------------------------------------------*/
@@ -212,23 +260,32 @@ void autonomous(void) {
 /*---------------------------------------------------------------------------*/
 
 void usercontrol(void) {
-  int modeToggle = 0; 
+  int modeToggle = 1; 
   bool modeToggleX = true;
   bool modeToggleA = true;
   bool modeToggleB = true;
   bool toggleY = true;
   bool toggleR2 = true;
-  bool toggleX = true; 
+  bool toggleX = true;
+  bool toggleL2 = true; 
 
   bool useHopper = false;
 
   // Pneumatics
-  hopperValve = false;
-  scraperRight = false;
-  scraperLeft = false; 
+  hopperValve = true;
+  scraper = true;
+
   
   // User control code here, inside the loop
   while (1) {
+    if (Controller.ButtonL2.pressing()) {
+      if (toggleL2) {
+        topGoalMacro();
+        toggleL2 = false; 
+      }
+    } else {
+      toggleL2 = true; 
+    }
 
     if (Controller.ButtonB.pressing()) {
       if (modeToggleB) {
@@ -271,8 +328,7 @@ void usercontrol(void) {
     //scraper
     if (Controller.ButtonX.pressing()) {
       if(toggleX) {
-        scraperLeft = !scraperLeft;
-        scraperRight = !scraperRight;   
+        scraper = !scraper; 
         toggleX = false;
       }
     } else {
@@ -280,28 +336,28 @@ void usercontrol(void) {
     }
 
     if (modeToggle == 0) { //middle
-      if (Controller.ButtonL1.pressing()) {
+      if (Controller.ButtonR1.pressing()) {
         bottomIntake.spin(directionType::fwd, 200, vex::velocityUnits::pct);
         middleIntake.spin(directionType::fwd, 200, vex::velocityUnits::pct);
-        hopperIntake.spin(directionType::fwd, useHopper ? 200 : 0, vex::velocityUnits::pct);
-      } else if (Controller.ButtonR1.pressing()) {
+        hopperIntake.spin(directionType::fwd, useHopper ? -200 : 0, vex::velocityUnits::pct);
+      } else if (Controller.ButtonL1.pressing()) {
         bottomIntake.spin(directionType::fwd, -200, vex::velocityUnits::pct);
         middleIntake.spin(directionType::fwd, -200, vex::velocityUnits::pct);
-        hopperIntake.spin(directionType::fwd, useHopper ? -200 : 0, vex::velocityUnits::pct);
+        hopperIntake.spin(directionType::fwd, useHopper ? 200 : 0, vex::velocityUnits::pct);
       } else {
         bottomIntake.spin(directionType::fwd, 0, vex::velocityUnits::pct);
         middleIntake.spin(directionType::fwd, 0, vex::velocityUnits::pct);
         hopperIntake.spin(directionType::fwd, 0, vex::velocityUnits::pct);
       }
     } else if (modeToggle == 1) { // top
-      if (Controller.ButtonL1.pressing()) {
-        bottomIntake.spin(directionType::fwd, -200, vex::velocityUnits::pct);
-        middleIntake.spin(directionType::fwd, 200, vex::velocityUnits::pct);
-        hopperIntake.spin(directionType::fwd, useHopper ? 200 : 0, vex::velocityUnits::pct);
-      } else if (Controller.ButtonR1.pressing()) {
+      if (Controller.ButtonR1.pressing()) {
         bottomIntake.spin(directionType::fwd, 200, vex::velocityUnits::pct);
         middleIntake.spin(directionType::fwd, -200, vex::velocityUnits::pct);
         hopperIntake.spin(directionType::fwd, useHopper ? -200 : 0, vex::velocityUnits::pct);
+      } else if (Controller.ButtonL1.pressing()) {
+        bottomIntake.spin(directionType::fwd, -200, vex::velocityUnits::pct);
+        middleIntake.spin(directionType::fwd, 200, vex::velocityUnits::pct);
+        hopperIntake.spin(directionType::fwd, useHopper ? 200 : 0, vex::velocityUnits::pct);
       } else {
         bottomIntake.spin(directionType::fwd, 0, vex::velocityUnits::pct);
         middleIntake.spin(directionType::fwd, 0, vex::velocityUnits::pct);
@@ -332,6 +388,52 @@ void usercontrol(void) {
 //
 // Main will set up the competition functions and callbacks.
 //
+
+void tunePID() {
+  bool toggleUp = true; // turning
+  bool toggleDown = true; //turning
+  bool toggleRight = true;
+  bool toggleLeft = true;
+  bool toggleA = true; // switches between turning and going forward and
+                       // backward
+  bool forwardBackward = true; 
+  int turnValue = 360;
+  float driveValue = 0.6;
+  
+  while (true) {
+    if (Controller.ButtonRight.pressing()) {
+      if (toggleRight) {
+        if (forwardBackward) { //then go forward or backward
+          driveValue += 0.01;
+        } else { // then turn
+          turnValue++;
+        }
+
+        toggleRight = false;
+      }
+    } else {
+      toggleRight = true;
+    }
+    reinstantiate(driveValue);
+
+    if (Controller.ButtonLeft.pressing()) {
+      if (toggleLeft) {
+        if (forwardBackward) { //then go forward or backward
+          driveValue -= 0.01; 
+        } else { // then turn
+          turnValue--;
+        }
+        toggleLeft = false; 
+      }
+    } else {
+      toggleLeft = true;
+    }
+    reinstantiate(driveValue);
+  }
+  // )
+
+
+}
 int main() {
   // Set up callbacks for autonomous and driver control periods.
   Competition.autonomous(autonomous);

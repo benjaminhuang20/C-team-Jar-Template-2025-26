@@ -287,6 +287,12 @@ void Drive::turn_to_angle(float angle, float turn_max_voltage, float turn_settle
  * @param heading Desired heading in degrees.
  */
 
+void Drive::drive_distance_voltage(float distance, float drive_max_voltage){
+  drive_distance(distance, get_absolute_heading(), drive_max_voltage,
+                 heading_max_voltage, drive_settle_error, drive_settle_time,
+                 drive_timeout, drive_kp, drive_ki, drive_kd, drive_starti,
+                 heading_kp, heading_ki, heading_kd, heading_starti);
+}
 void Drive::drive_distance(float distance){
   drive_distance(distance, get_absolute_heading(), drive_max_voltage, heading_max_voltage, drive_settle_error, drive_settle_time, drive_timeout, drive_kp, drive_ki, drive_kd, drive_starti, heading_kp, heading_ki, heading_kd, heading_starti);
 }
