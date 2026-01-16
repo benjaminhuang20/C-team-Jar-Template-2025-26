@@ -19,10 +19,17 @@ void odom_test();
 void tank_odom_test();
 void holonomic_odom_test();
 int intakeAntiJamTask(); 
+int colorOutakeTask();
 
 void right7BallPush();
+void right7BallFast();
+void left7BallFast();  
+void leftAWP(); 
 
 void skills();
 void postCrossScore(); 
 void skillsCrossover();
 void RBCrossover(); 
+
+void colorTest();
+void test(); 

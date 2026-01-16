@@ -21,9 +21,17 @@ extern digital_out scraper;
 extern digital_out descore;
 extern digital_out hood;
 
+extern optical intakeColor;
+
 extern distance rearDistance;
 
 extern bool isIntaking;
+
+extern bool auto_started; 
+
+extern bool isRed; 
+
+extern int current_auton_selection;
 
 extern controller Controller;
 

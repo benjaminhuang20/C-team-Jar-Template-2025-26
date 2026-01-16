@@ -84,7 +84,7 @@ PORT3,     -PORT4,
 //If you are using position tracking, this is the Forward Tracker port (the tracker which runs parallel to the direction of the chassis).
 //If this is a rotation sensor, enter it in "PORT1" format, inputting the port below.
 //If this is an encoder, enter the port as an integer. Triport A will be a "1", Triport B will be a "2", etc.
-PORT4,
+PORT17,
 
 //Input the Forward Tracker diameter (reverse it to make the direction switch):
 -2,
@@ -105,8 +105,8 @@ PORT4,
 
 );
 
-int current_auton_selection = 0;
-bool auto_started = false;
+// int current_auton_selection = 0;
+// bool auto_started = false;
 
 /**
  * Function before autonomous. It prints the current auton number on the screen
@@ -116,49 +116,47 @@ bool auto_started = false;
  */
 
 void pre_auton() {
-  // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
   default_constants();
+  bool toggleUp = true, toggleDown = true, toggleA = true ; 
 
   while(!auto_started){
-    Brain.Screen.clearScreen();
-    Brain.Screen.printAt(5, 20, "JAR Template v1.2.0");
-    Brain.Screen.printAt(5, 40, "Battery Percentage:");
-    Brain.Screen.printAt(5, 60, "%d", Brain.Battery.capacity());
-    Brain.Screen.printAt(5, 80, "Chassis Heading Reading:");
-    Brain.Screen.printAt(5, 100, "%f", chassis.get_absolute_heading());
-    Brain.Screen.printAt(5, 120, "Selected Auton:");
-    switch(current_auton_selection){
-      case 0:
-        Brain.Screen.printAt(5, 140, "Auton 1");
-        break;
-      case 1:
-        Brain.Screen.printAt(5, 140, "Auton 2");
-        break;
-      case 2:
-        Brain.Screen.printAt(5, 140, "Auton 3");
-        break;
-      case 3:
-        Brain.Screen.printAt(5, 140, "Auton 4");
-        break;
-      case 4:
-        Brain.Screen.printAt(5, 140, "Auton 5");
-        break;
-      case 5:
-        Brain.Screen.printAt(5, 140, "Auton 6");
-        break;
-      case 6:
-        Brain.Screen.printAt(5, 140, "Auton 7");
-        break;
-      case 7:
-        Brain.Screen.printAt(5, 140, "Auton 8");
-        break;
+ 
+    Controller.Screen.clearScreen();
+    Controller.Screen.setCursor(1, 1); 
+    Controller.Screen.print("Battery: %d", Brain.Battery.capacity());
+    Controller.Screen.setCursor(2, 1); 
+    Controller.Screen.print("heading: %f",chassis.get_absolute_heading());
+    Controller.Screen.setCursor(3,1); 
+    Controller.Screen.print("auton: %d",current_auton_selection); 
+    Controller.Screen.setCursor(3,10); 
+    Controller.Screen.print("%s", isRed ? "red" : "blue"); 
+
+    if(Controller.ButtonUp.pressing()){
+      if(toggleUp){
+        current_auton_selection = (current_auton_selection + 1) % 9; 
+        toggleUp = false; 
+      }
+    } else{
+      toggleUp = true; 
     }
-    if(Brain.Screen.pressing()){
-      while(Brain.Screen.pressing()) {}
-      current_auton_selection ++;
-    } else if (current_auton_selection == 8){
-      current_auton_selection = 0;
+
+    if(Controller.ButtonDown.pressing()){
+      if(toggleDown){
+        current_auton_selection = (current_auton_selection - 1) % 9; 
+        toggleDown = false; 
+      }
+    } else{
+      toggleDown = true; 
+    }
+
+    if(Controller.ButtonA.pressing()){
+      if(toggleA){
+        isRed = !isRed; 
+        toggleA = false; 
+      }
+    } else{
+      toggleA = true; 
     }
     task::sleep(10);
   }
@@ -173,23 +171,41 @@ void pre_auton() {
 
 void autonomous(void) {
   auto_started = true;
-  // chassis.set_heading(-90);
-  // skillsCrossover(); 
-  right7BallPush();
-  // skills();
-  // chassis.set_heading(180); 
-
-  chassis.turn_to_angle(180);
-  chassis.drive_distance(7.5);
-  chassis.turn_to_angle(90);
-  chassis.drive_distance_timeout(11.5,500);
-  chassis.turn_to_angle(180);
-  chassis.drive_distance(-26); 
-  // chassis.set_drive_constants(12, 1.4, 0, 12, 0);
-  // chassis.drive_distance(10, 245);
-  // chassis.drive_distance(-18, 180);
-  // chassis.drive_distance(-20);
-  // chassis.drive_distance(2);
+  switch(current_auton_selection){
+    case 0:
+      // right7BallFast();
+      chassis.turn_to_angle(90); 
+      chassis.turn_to_angle(180); 
+      chassis.turn_to_angle(270); 
+      chassis.turn_to_angle(0); 
+      chassis.drive_distance(24,90); 
+      break;
+    case 1:
+      // leftAWP(); 
+      left7BallFast();
+      break;
+    case 2:
+      chassis.drive_distance(4); 
+      break;
+    case 3:
+      skills(); 
+      break;
+    case 4:
+      test(); 
+      break;
+    case 5:
+      chassis.set_heading(-90); 
+      postCrossScore(); 
+      break;
+    case 6:
+      chassis.set_heading(-90); 
+      skillsCrossover();
+      break;
+    case 7:
+      chassis.set_heading(90); 
+      RBCrossover(); 
+      break;
+  }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -204,6 +220,7 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
+  auto_started = false; 
   isIntaking = false; 
   int intakeDirection = 127;
   bool toggleX = true, toggleR2 = true, toggleL2 = true;
@@ -234,10 +251,11 @@ void usercontrol(void) {
     if(Controller.ButtonL2.pressing()){
       if(toggleL2){
         toggleL2 = false;
-        descore = !descore; 
+        descore = false; 
       }
     } else {
       toggleL2 = true;
+      descore = true; 
     }
 
     if(Controller.ButtonR2.pressing()){
@@ -248,21 +266,13 @@ void usercontrol(void) {
     } else {
       toggleR2 = true;
     }
-    // This is the main execution loop for the user control program.
-    // Each time through the loop your program should update motor + servo
-    // values based on feedback from the joysticks.
-
-    // ........................................................................
-    // Insert user code here. This is where you use the joystick values to
-    // update your motors, etc.
-    // ........................................................................
-
-    //Replace this line with chassis.control_tank(); for tank drive 
-    //or chassis.control_holonomic(); for holo drive.
+    if(!hood){
+      topIntake.spin(directionType::fwd, 0, vex::velocityUnits::pct);
+    }
+ 
     chassis.control_arcade();
 
     wait(20, msec); // Sleep the task for a short amount of time to
-                    // prevent wasted resources.
   }
 }
 
@@ -271,6 +281,7 @@ void usercontrol(void) {
 //
 int main() {
   // Set up callbacks for autonomous and driver control periods.
+
   Competition.autonomous(autonomous);
   Competition.drivercontrol(usercontrol);
 
