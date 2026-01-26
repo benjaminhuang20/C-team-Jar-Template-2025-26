@@ -15,7 +15,7 @@ class Drive
 private:
   float wheel_diameter;
   float wheel_ratio;
-  float gyro_scale;
+  
   float drive_in_to_deg_ratio;
   float ForwardTracker_center_distance;
   float ForwardTracker_diameter;
@@ -26,6 +26,7 @@ private:
   vex:: triport ThreeWire = vex::triport(vex::PORT22);
 
 public: 
+  float gyro_scale;
   drive_setup drive_setup = ZERO_TRACKER_NO_ODOM;
   motor_group DriveL;
   motor_group DriveR;
@@ -38,6 +39,7 @@ public:
   rotation R_SidewaysTracker;
   encoder E_ForwardTracker;
   encoder E_SidewaysTracker;
+  distance backDistance; 
 
   float turn_max_voltage;
   float turn_kp;
@@ -79,7 +81,7 @@ public:
   float boomerang_lead;
   float boomerang_setback;
 
-  Drive(enum::drive_setup drive_setup, motor_group DriveL, motor_group DriveR, int gyro_port, float wheel_diameter, float wheel_ratio, float gyro_scale, int DriveLF_port, int DriveRF_port, int DriveLB_port, int DriveRB_port, int ForwardTracker_port, float ForwardTracker_diameter, float ForwardTracker_center_distance, int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_center_distance);
+  Drive(enum::drive_setup drive_setup, motor_group DriveL, motor_group DriveR, int gyro_port, float wheel_diameter, float wheel_ratio, float gyro_scale, int DriveLF_port, int DriveRF_port, int DriveLB_port, int DriveRB_port, int ForwardTracker_port, float ForwardTracker_diameter, float ForwardTracker_center_distance, int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_center_distance, distance backDistance);
 
   void drive_with_voltage(float leftVoltage, float rightVoltage);
 
@@ -104,6 +106,10 @@ public:
   void turn_to_angle(float angle, float turn_max_voltage, float turn_settle_error, float turn_settle_time, float turn_timeout, float turn_kp, float turn_ki, float turn_kd, float turn_starti);
   void turn_to_angle_timeout(float angle, float turn_timeout); 
 
+  void drive_distance_customFunct(float distance, std::vector<float> triggerDistances, std::vector<std::function<void()>> actions); 
+  void drive_distance_customFunct(float distance, float heading, std::vector<float> triggerDistances, std::vector<std::function<void()>> actions); 
+  void drive_distance_customFunct(float distance, float heading, float drive_max_voltage, float heading_max_voltage, float drive_settle_error, float drive_settle_time, float drive_timeout, float drive_kp, float drive_ki, float drive_kd, float drive_starti, float heading_kp, float heading_ki, float heading_kd, float heading_starti, std::vector<float> triggerDistances, std::vector<std::function<void()>> actions);
+
   void drive_distance(float distance);
   void drive_distance(float distance, float heading);
   void drive_distance(float distance, float heading, float drive_max_voltage, float heading_max_voltage);
@@ -111,6 +117,10 @@ public:
   void drive_distance(float distance, float heading, float drive_max_voltage, float heading_max_voltage, float drive_settle_error, float drive_settle_time, float drive_timeout, float drive_kp, float drive_ki, float drive_kd, float drive_starti, float heading_kp, float heading_ki, float heading_kd, float heading_starti);
   void drive_distance_timeout(float distance, int timeout); 
   void drive_distance_chaining_timeout(float distance, float heading, int timeout); 
+
+  void drive_distance_from_wall(float distance); 
+  void drive_distance_from_wall(float distance, float heading, float drive_max_voltage, float heading_max_voltage, float drive_settle_error, float drive_settle_time, float drive_timeout, float drive_kp, float drive_ki, float drive_kd, float drive_starti, float heading_kp, float heading_ki, float heading_kd, float heading_starti);
+
 
   void drive_distance_chained(std::vector<float> distances, std::vector<float> distanceCutoff, std::vector<float> headings, std::vector<float> headingCutoff); 
 

@@ -255,6 +255,25 @@ int intakeAntiJamTask(){
   return 0; 
 }
 
+int TopintakeAntiJamTask(){
+  while(auto_started){
+
+    double voltage = topIntake.voltage(voltageUnits::volt);
+    double efficiency = topIntake.efficiency(); 
+
+    if(voltage > 0 && efficiency == 0){
+      topIntake.spin(reverse, 12, volt); 
+    } else{
+      topIntake.spin(fwd, 12, volt);
+    }
+
+    wait(0.1, sec); 
+  }
+
+  return 0; 
+}
+
+
 int colorOutakeTask(){
   auto intakeColorInRange = []() {
     int hue = intakeColor.hue();
@@ -332,23 +351,37 @@ void right7BallPush(){
 
 void right7BallFast(){
   task intakeTask = task(intakeAntiJamTask);
-  chassis.drive_distance_timeout(14,500); 
+  chassis.drive_distance_timeout(14.3,500);
+  descore = true; 
   scraper = true; 
   chassis.drive_distance(20,25); 
-  chassis.drive_distance(-39,-90); 
+  chassis.drive_distance(-39.5,-90); 
 
   chassis.turn_to_angle(180); 
   chassis.set_drive_constants(6, 1.5, 0, 10, 0);
-  chassis.drive_distance_timeout(14.8, 1000); 
-  wait(1,sec); 
+  chassis.drive_distance_timeout(12.6, 1000); 
+  wait(0.7,sec); 
   chassis.turn_to_angle(180); //around half second so it adds to the wait time :D
 
-  chassis.set_drive_constants(12, 1.5, 0, 10, 0);
-  chassis.drive_distance_timeout(-40, 1000); 
-  topIntake.spin(fwd,10,volt); 
+  chassis.set_drive_constants(9, 1.5, 0, 10, 0);
+  chassis.drive_distance_timeout(-28, 1000); 
+  topIntake.spin(reverse,12,volt);
+  wait(0.3,sec);
+  topIntake.spin(fwd,12,volt);
+  wait(3.7,sec);
+  topIntake.spin(fwd,0,volt);
+  chassis.turn_to_angle(180);
+
+  //push
+  descore = false;
+  scraper = false;
+  chassis.drive_distance(10,-90);
+  chassis.drive_distance(9.5);
+  chassis.turn_to_angle(0);
+  chassis.drive_distance(29);
 
   chassis.DriveL.stop(brakeType::brake); 
-  chassis.DriveR.stop(brakeType::brake); 
+  chassis.DriveR.stop(brakeType::brake);
 }
 
 void left7BallFast(){
@@ -364,7 +397,7 @@ void left7BallFast(){
   wait(.9,sec); 
   chassis.turn_to_angle(180); //around half second so it adds to the wait time :D
 
-  chassis.set_drive_constants(12, 1.5, 0, 10, 0);
+  chassis.set_drive_constants(11, 1.5, 0, 10, 0);
   chassis.drive_distance_timeout(-40, 1000); 
   topIntake.spin(fwd,10,volt); 
 }
@@ -377,38 +410,68 @@ void leftAWP(){
   task intakeTask = task(intakeAntiJamTask); 
   bottomIntake.spin(fwd, 12, volt);
   
-  chassis.set_drive_constants(7, 1.4, 0, 12, 0);
-  chassis.drive_distance(17.5);
-  chassis.turn_to_angle(-25);
-  chassis.set_drive_constants(4, 1.4, 0, 12, 0);
-  chassis.drive_distance(16);
-  chassis.set_drive_constants(10, 1.4, 0, 12, 0);
-  scraper.set(true);
-  chassis.drive_distance(-1.5);
+  chassis.drive_distance_timeout(15.7,500); 
+  scraper = true; 
+  chassis.drive_distance(20,-25); 
+  chassis.drive_distance(-4);
   chassis.turn_to_angle(-135);
-  chassis.drive_distance_timeout(-25,1000);
-  chassis.drive_distance(2);
-  topIntake.spin(fwd, 10, volt); 
-  wait(1,sec);
-  topIntake.spin(fwd, 0, volt); 
-  chassis.drive_distance(48.25, -127.5); 
+  chassis.drive_distance(-16);
+  topIntake.spin(fwd,11,volt);
+  wait(0.8,sec);
+  topIntake.spin(fwd,0,volt);
+  chassis.drive_distance(51.75);
   chassis.turn_to_angle(180);
+  chassis.set_drive_constants(6, 1.5, 0, 10, 0);
+  chassis.drive_distance_timeout(10, 1000);
+  //chassis.turn_to_angle(180);
+  chassis.drive_distance_timeout(-29.5, 1000);
+  topIntake.spin(fwd,12,volt);
+  wait(1,sec);
+  topIntake.spin(fwd,0,volt);
 
-  chassis.set_drive_constants(6, 1.4, 0, 12, 0);
-  chassis.drive_distance_timeout(19, 1000); 
-  wait(1,sec); 
-  chassis.set_drive_constants(12, 1.4, 0, 12, 0);
-  chassis.drive_distance_timeout(-32, 1100);
+  descore = false;
+  scraper = false;
+  chassis.drive_distance(10,-90);
+  chassis.drive_distance_timeout(10.8,1000);
+  wait(0.1,sec);
+  chassis.turn_to_angle(0);
+  chassis.drive_distance(29);
+
+  chassis.DriveL.stop(brakeType::brake); 
+  chassis.DriveR.stop(brakeType::brake);
+
   
-  topIntake.spin(fwd, 10, volt);
-  wait(1.5,sec); 
-  intakeTask.stop(); 
-  bottomIntake.spin(fwd,12,volt); 
+  
+  // chassis.set_drive_constants(7, 1.4, 0, 12, 0);
+  // chassis.drive_distance(17.5);
+  // chassis.turn_to_angle(-25);
+  // chassis.set_drive_constants(4, 1.4, 0, 12, 0);
+  // chassis.drive_distance(16);
+  // chassis.set_drive_constants(10, 1.4, 0, 12, 0);
+  // scraper.set(true);
+  // chassis.drive_distance(-1.5);
+  // chassis.turn_to_angle(-135);
+  // chassis.drive_distance_timeout(-18,1000);
+  // chassis.drive_distance(2);
+  // topIntake.spin(fwd, 10, volt); 
+  // wait(0.75,sec);
+  // topIntake.spin(fwd, 0, volt); 
+  // chassis.drive_distance(48.25, -127.5); 
+  // chassis.turn_to_angle(180);
 
-  // task intakeTask = task(intakeAntiJamTask);
-  // hood.set(true);
-  // scraper.set(false); 
-
+  // chassis.set_drive_constants(6, 1.4, 0, 12, 0);
+  // chassis.drive_distance_timeout(19, 1000); 
+  // wait(1,sec);
+  // chassis.turn_to_angle(180);
+  // chassis.set_drive_constants(12, 1.4, 0, 12, 0);
+  // chassis.drive_distance_timeout(-32, 1100);
+  
+  // topIntake.spin(fwd, 10, volt);
+  // wait(1.5,sec); 
+  // intakeTask.stop(); 
+  // bottomIntake.spin(fwd,12,volt);
+  // wait(2,sec);
+  // chassis.turn_to_angle(90); 
 
 }
 void skills(){
@@ -437,46 +500,45 @@ void skills(){
   postCrossScore();
   skillsCrossover();
 
-  scraper = true;
-  hood = false;
-  topIntake.spin(reverse, 0, volt);
-  intakeTask = task(intakeAntiJamTask); 
-  chassis.set_drive_constants(6, 1.4, 0, 12, 0);
-  chassis.drive_distance_timeout(20.5,1000);
-  wait(3.5, sec);
+  // scraper = true;
+  // hood = false;
+  // topIntake.spin(reverse, 0, volt);
+  // intakeTask = task(intakeAntiJamTask); 
+  // chassis.set_drive_constants(6, 1.4, 0, 12, 0);
+  // chassis.drive_distance_timeout(20.5,1000);
+  // wait(3.5, sec);
 
-  chassis.turn_to_angle(-90);
+  // chassis.turn_to_angle(-90);
   
 
-  topIntake.spin(fwd, 0, volt);
-  intakeTask.stop();
-  bottomIntake.spin(fwd, 0, volt);
+  // topIntake.spin(fwd, 0, volt);
+  // intakeTask.stop();
+  // bottomIntake.spin(fwd, 0, volt);
 
-  chassis.set_heading(90);
+  // chassis.set_heading(90);
   RBCrossover(); 
   postCrossScore();
 
   
 
-  chassis.drive_distance_timeout(15, 250);
-  chassis.turn_to_angle(70,150); 
-  chassis.drive_distance(-50, 0);
-  chassis.drive_distance_timeout(20,250);
-  chassis.drive_distance(-50);
+  // chassis.set_heading(-90); 
+  chassis.drive_distance_timeout(18, 400);
+  chassis.turn_to_angle(27.5,150); 
+  chassis.drive_distance(-80);
 }
 
 void postCrossScore(){
   hood = true;
   chassis.set_drive_constants(12, 1.4, 0, 12, 0);
   chassis.drive_distance_timeout(-35, 700);
-  topIntake.spin(fwd, 10, volt);
+  topIntake.spin(fwd, 12, volt);
   task intakeTask = task(intakeAntiJamTask);
   scraper.set(true);
-  wait(4.5, sec);
+  wait(4.25, sec);
   chassis.turn_to_angle(-90);
   chassis.set_drive_constants(6, 1.4, 0, 12, 0);
   // chassis.drive_distance_timeout(29, 1400);//take from scraper 
-  chassis.drive_distance_timeout(29, 1400);//take from scraper 
+  chassis.drive_distance_timeout(29.25, 1400);//take from scraper 
   topIntake.spin(reverse, 0, volt); //store
   hood.set(false);
   wait(3, sec);
@@ -486,42 +548,42 @@ void postCrossScore(){
   hood = true; 
 
   chassis.turn_to_angle(-90);
-  chassis.set_drive_constants(12, 1.4, 0, 12, 0);
+  chassis.set_drive_constants(11, 1.4, 0, 12, 0);
   chassis.drive_distance_timeout(-35, 700);
   intakeTask = task(intakeAntiJamTask);
   topIntake.spin(fwd, 12, volt);
-  wait(4.5, sec);
+  wait(4, sec);
   intakeTask.stop(); 
   
 }
 void skillsCrossover(){
-  // chassis.turn_to_angle(-90);
+  chassis.turn_to_angle(-90);
   scraper = true;
-  chassis.drive_distance(10,0); 
+  chassis.drive_distance(10); 
+  chassis.turn_to_angle(0);
   // chassis.turn_to_angle(0);  
   chassis.drive_distance(-93.5,0);
   wait(0.2, sec);
 
   chassis.set_drive_constants(10, 1.4, 0, 12, 0);
-  float Distance1 = 15.75 - rearDistance.objectDistance(vex::distanceUnits::in);
-  chassis.drive_distance(Distance1);
+  // float Distance1 = 15.75 - rearDistance.objectDistance(vex::distanceUnits::in);
+  // chassis.drive_distance(Distance1);
+  chassis.drive_distance_from_wall(19);
+
+  chassis.set_turn_exit_conditions(1, 150, 2000);
   chassis.turn_to_angle(-90); 
+  chassis.set_heading(90); 
 
+  topIntake.spin(reverse, 0, volt);
+  task intakeTask = task(intakeAntiJamTask); 
+  chassis.set_drive_constants(5, 1.4, 0, 12, 0);
+  chassis.drive_distance_timeout(23.25,1000);
+  chassis.turn_to_angle(90); 
+  chassis.set_turn_exit_conditions(2.5, 150, 2000);
+  // chassis.gyro_scale *= -1; 
   
-        topIntake.spin(reverse, 0, volt);
-        task intakeTask = task(intakeAntiJamTask); 
-        chassis.set_drive_constants(5, 1.4, 0, 12, 0);
-        chassis.drive_distance_timeout(21,1000);
-        wait(3.5, sec);
-
-        chassis.turn_to_angle(-90);
-        
-
-        topIntake.spin(fwd, 0, volt);
-        intakeTask.stop();
-        bottomIntake.spin(fwd, 0, volt);
-
-        chassis.set_heading(90);
+  // chassis.set_heading(chassis.get_absolute_heading()* (-1));
+  wait(3, sec);
 }
 
 void RBCrossover(){  
@@ -538,10 +600,12 @@ void RBCrossover(){
   // float a = c;
   hood = true; 
 
-  float Distance1 = 18.25 - rearDistance.objectDistance(vex::distanceUnits::in); 
+  // float Distance1 = 18.25 - rearDistance.objectDistance(vex::distanceUnits::in); 
+
   // float Distance2 = 10 -rightDistance.objectDistance(inch); 
   chassis.set_drive_constants(8, 1.4, 0, 12, 0);
-  chassis.drive_distance(Distance1);
+  // chassis.drive_distance(Distance1);
+  chassis.drive_distance_from_wall(19);
   chassis.turn_to_angle(-90) ;
 
 }
@@ -561,8 +625,121 @@ void colorTest(){
 }
 
 void test(){
-  task intakeTask = task(intakeAntiJamTask);
-  topIntake.spin(fwd,12,volt); 
-  task outtakeTask = task(colorOutakeTask); 
-  // topIntake.spin(fwd,12,volt); 
+  chassis.drive_distance(2);
+}
+
+void soloAWP(){
+  descore.set(true);
+  hood.set(false);
+
+
+  topIntake.spin(fwd, 0, volt);
+  task intakeTask = task(intakeAntiJamTask); 
+  bottomIntake.spin(fwd, 12, volt);
+
+  chassis.set_heading(90);
+  chassis.drive_distance(36);
+
+  // chassis.drive_distance(41.5,90);
+  scraper = true;
+  chassis.turn_to_angle(180,10,1,20,1000);
+  //chassis.turn_to_angle(180);
+  
+  chassis.set_drive_constants(6, 1.5, 0, 10, 0);
+  // chassis.drive_distance_timeout(21.5,1000);
+  chassis.drive_distance_timeout(11.5, 500);
+  wait(0.3,sec);
+  chassis.turn_to_angle(180);
+  chassis.set_drive_constants(8, 1.5, 0, 10, 0);
+  chassis.drive_distance_timeout(-40,800);
+  chassis.set_drive_constants(10, 1.5, 0, 10, 0);
+  scraper = false;
+  topIntake.spin(fwd,12,volt);
+  wait(1,sec);
+  topIntake.spin(fwd, 0, volt);
+
+
+  
+
+  // chassis.turn_to_angle(-70,10,1,20,700);
+  chassis.turn_to_angle(-180); 
+  chassis.drive_settle_error = 0.25;
+  chassis.drive_distance(7.75); 
+  chassis.drive_settle_error = 0.5;
+
+  chassis.set_drive_constants(8, 1.5, 0, 10, 0);
+  chassis.turn_to_angle(-52);
+  chassis.heading_max_voltage = 1;
+  chassis.drive_distance_chaining_timeout(25.5,-90,700);
+  scraper = true;
+  chassis.heading_max_voltage = 10;
+  chassis.drive_settle_error = 0.25;
+  chassis.drive_distance_customFunct(
+    55.5,
+    -90.0,
+    {14.0, 28.0,56.5},
+    {[](){ scraper = false;},[](){ scraper = true; },[](){scraper = false;}}
+  );
+  chassis.drive_settle_error = 0.5;
+  chassis.heading_max_voltage = 10;
+
+  // chassis.drive_distance_timeout(48.5,1000);
+  // scraper = true;
+  
+
+
+  chassis.drive_max_voltage = 6;
+  chassis.heading_max_voltage = 6;
+  chassis.drive_distance_chaining_timeout(-20 ,-135,1000);
+  topIntake.spin(fwd,11,volt);
+  wait(0.6,sec);
+  topIntake.spin(fwd, 0, volt);
+  wait(0.2,sec);
+  chassis.drive_max_voltage = 10;
+  chassis.heading_max_voltage = 10;
+  // chassis.drive_distance_chaining_timeout(47.5,-135,1000);
+  // chassis.drive_distance(49.75);
+  chassis.drive_distance(54);
+  scraper = true;
+  chassis.turn_to_angle(180,10,1,1,500);
+  chassis.set_drive_constants(6, 1.5, 0, 10, 0);
+  chassis.drive_distance_timeout(8,800);
+  wait(0.1,sec);
+  chassis.turn_to_angle(-180);
+
+  chassis.drive_distance_timeout(-32,750);
+  topIntake.spin(fwd,12,volt);
+}
+
+void right4BallFast(){
+  descore.set(false);
+  hood.set(false);
+
+  topIntake.spin(reverse, 0, volt); 
+  task intakeTask = task(intakeAntiJamTask); 
+  bottomIntake.spin(fwd, 12, volt);
+
+  chassis.drive_distance(18,15);
+  scraper = true;
+  chassis.drive_distance(8.5,15);
+  chassis.set_drive_constants(8, 1.5, 0, 10, 0);
+  chassis.drive_distance(-24,-90);
+  chassis.drive_distance_chaining_timeout(-16,-180,1000);
+  chassis.drive_distance_timeout(-12,500);
+  topIntake.spin(fwd,12,volt);
+  wait(1.5,sec);
+  scraper = false;
+  topIntake.spin(fwd,0,volt);
+
+  chassis.set_drive_constants(10, 1.5, 0, 10, 0);
+  chassis.drive_distance(21.5,245);
+  chassis.turn_to_angle(0);
+  chassis.drive_distance(35,0);
+  descore = false;
+  
+
+
+    
+
+
 }

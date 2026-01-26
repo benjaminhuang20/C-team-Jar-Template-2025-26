@@ -29,7 +29,7 @@ Drive::Drive(enum::drive_setup drive_setup, motor_group DriveL, motor_group Driv
 int gyro_port, float wheel_diameter, float wheel_ratio, float gyro_scale, 
 int DriveLF_port, int DriveRF_port, int DriveLB_port, int DriveRB_port, 
 int ForwardTracker_port, float ForwardTracker_diameter, float ForwardTracker_center_distance, 
-int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_center_distance) :
+int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_center_distance, distance backDistance) :
   wheel_diameter(wheel_diameter),
   wheel_ratio(wheel_ratio),
   gyro_scale(gyro_scale),
@@ -51,7 +51,8 @@ int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_
   R_ForwardTracker(ForwardTracker_port),
   R_SidewaysTracker(SidewaysTracker_port),
   E_ForwardTracker(ThreeWire.Port[to_port(ForwardTracker_port)]),
-  E_SidewaysTracker(ThreeWire.Port[to_port(SidewaysTracker_port)])
+  E_SidewaysTracker(ThreeWire.Port[to_port(SidewaysTracker_port)]),
+  backDistance(backDistance)
 {
     if (drive_setup == TANK_ONE_FORWARD_ENCODER || drive_setup == TANK_ONE_FORWARD_ROTATION || drive_setup == ZERO_TRACKER_ODOM){
       odom.set_physical_distances(ForwardTracker_center_distance, 0);
@@ -326,6 +327,71 @@ void Drive::drive_distance(float distance, float heading, float drive_max_voltag
     task::sleep(10);
   }
 }
+
+void Drive::drive_distance_from_wall(float distance){
+  drive_distance_from_wall(distance, get_absolute_heading(), drive_max_voltage, heading_max_voltage, drive_settle_error, drive_settle_time, drive_timeout, drive_kp, drive_ki, drive_kd, drive_starti, heading_kp, heading_ki, heading_kd, heading_starti);
+}
+
+void Drive::drive_distance_from_wall(float distance, float heading, float drive_max_voltage, float heading_max_voltage, float drive_settle_error, float drive_settle_time, float drive_timeout, float drive_kp, float drive_ki, float drive_kd, float drive_starti, float heading_kp, float heading_ki, float heading_kd, float heading_starti){
+  PID drivePID(distance, drive_kp, drive_ki, drive_kd, drive_starti, drive_settle_error, drive_settle_time, drive_timeout);
+  PID headingPID(reduce_negative_180_to_180(heading - get_absolute_heading()), heading_kp, heading_ki, heading_kd, heading_starti);
+  float average_position = backDistance.objectDistance(vex::distanceUnits::in);
+  while(drivePID.is_settled() == false){
+    average_position = backDistance.objectDistance(vex::distanceUnits::in);
+    // float drive_error = distance+start_average_position-average_position;
+    float drive_error = (distance - average_position); 
+    float heading_error = reduce_negative_180_to_180(heading - get_absolute_heading());
+    float drive_output = drivePID.compute(drive_error);
+    float heading_output = headingPID.compute(heading_error);
+
+    drive_output = clamp(drive_output, -drive_max_voltage, drive_max_voltage);
+    heading_output = clamp(heading_output, -heading_max_voltage, heading_max_voltage);
+
+    drive_with_voltage(drive_output+heading_output, drive_output-heading_output);
+    task::sleep(10);
+  }
+}
+
+
+
+void Drive::drive_distance_customFunct(float distance, std::vector<float> triggerDistances, std::vector<std::function<void()>> actions){
+  drive_distance_customFunct(distance, get_absolute_heading(), drive_max_voltage, heading_max_voltage, drive_settle_error, drive_settle_time, drive_timeout, drive_kp, drive_ki, drive_kd, drive_starti, heading_kp, heading_ki, heading_kd, heading_starti, triggerDistances, actions);
+}
+void Drive::drive_distance_customFunct(float distance, float heading, std::vector<float> triggerDistances, std::vector<std::function<void()>> actions){
+  drive_distance_customFunct(distance, heading, drive_max_voltage, heading_max_voltage, drive_settle_error, drive_settle_time, drive_timeout, drive_kp, drive_ki, drive_kd, drive_starti, heading_kp, heading_ki, heading_kd, heading_starti, triggerDistances, actions);
+}
+void Drive::drive_distance_customFunct(float distance, float heading, float drive_max_voltage, float heading_max_voltage, float drive_settle_error, float drive_settle_time, float drive_timeout, float drive_kp, float drive_ki, float drive_kd, float drive_starti, float heading_kp, float heading_ki, float heading_kd, float heading_starti, std::vector<float> triggerDistances, std::vector<std::function<void()>> actions){
+  PID drivePID(distance, drive_kp, drive_ki, drive_kd, drive_starti, drive_settle_error, drive_settle_time, drive_timeout);
+  PID headingPID(reduce_negative_180_to_180(heading - get_absolute_heading()), heading_kp, heading_ki, heading_kd, heading_starti);
+  float start_average_position = (get_left_position_in()+get_right_position_in())/2.0;
+  float average_position = start_average_position;
+  int functionIndex = 0; 
+  float dir = (distance >= 0) ? 1.0f : -1.0f;
+
+  while(drivePID.is_settled() == false){
+    average_position = (get_left_position_in()+get_right_position_in())/2.0;
+    float traveled = average_position - start_average_position;
+
+    while(functionIndex < triggerDistances.size() && dir * traveled >= dir * triggerDistances[functionIndex]){
+      actions[functionIndex]();
+      functionIndex++;
+    }
+
+    float drive_error = distance+start_average_position-average_position;
+
+    float heading_error = reduce_negative_180_to_180(heading - get_absolute_heading());
+    float drive_output = drivePID.compute(drive_error);
+    float heading_output = headingPID.compute(heading_error);
+
+    drive_output = clamp(drive_output, -drive_max_voltage, drive_max_voltage);
+    heading_output = clamp(heading_output, -heading_max_voltage, heading_max_voltage);
+
+    drive_with_voltage(drive_output+heading_output, drive_output-heading_output);
+    task::sleep(10);
+  }
+}
+
+
 
 // void Drive::drive_distance_chained(std::vector<float> distances, std::vector<float> distanceCutoff, std::vector<float> headings, std::vector<float> headingCutoff){
 //   PID drivePID(distance, drive_kp, drive_ki, drive_kd, drive_starti, drive_settle_error, drive_settle_time, drive_timeout);

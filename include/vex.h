@@ -15,6 +15,7 @@
 #include <string.h>
 #include <algorithm>
 #include <vector>
+#include<functional>
 
 #include "v5.h"
 #include "v5_vcs.h"

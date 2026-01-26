@@ -101,7 +101,9 @@ PORT17,
 2,
 
 //Sideways tracker center distance (positive distance is behind the center of the robot, negative is in front):
--5.75
+-5.75,
+
+distance(PORT5)
 
 );
 
@@ -119,9 +121,10 @@ void pre_auton() {
   vexcodeInit();
   default_constants();
   bool toggleUp = true, toggleDown = true, toggleA = true ; 
+  descore = false;
 
   while(!auto_started){
- 
+    // descore = false;
     Controller.Screen.clearScreen();
     Controller.Screen.setCursor(1, 1); 
     Controller.Screen.print("Battery: %d", Brain.Battery.capacity());
@@ -174,36 +177,46 @@ void autonomous(void) {
   switch(current_auton_selection){
     case 0:
       // right7BallFast();
-      chassis.turn_to_angle(90); 
-      chassis.turn_to_angle(180); 
-      chassis.turn_to_angle(270); 
-      chassis.turn_to_angle(0); 
-      chassis.drive_distance(24,90); 
+      chassis.set_heading(-90); 
+      chassis.drive_distance_timeout(18, 400);
+    chassis.turn_to_angle(27.5,150); 
+    chassis.drive_distance(-80);
+      // chassis.drive_distance_timeout(20,250);
+      // chassis.drive_distance(-50);
       break;
     case 1:
-      // leftAWP(); 
-      left7BallFast();
+      right7BallFast();
       break;
     case 2:
-      chassis.drive_distance(4); 
+      leftAWP(); 
       break;
     case 3:
       skills(); 
       break;
     case 4:
-      test(); 
+      test();
+      //chassis.drive_distance(4); 
       break;
     case 5:
-      chassis.set_heading(-90); 
-      postCrossScore(); 
+      soloAWP();
+
+      // chassis.drive_distance_customFunct(
+      //   50,
+      //   // 90.0,
+      //   {10.0, 30.0},
+      //   {[](){ scraper = true;},[](){ scraper = false; }}
+      // );
+      // chassis.set_heading(-90);  
+      // postCrossScore(); 
       break;
     case 6:
-      chassis.set_heading(-90); 
-      skillsCrossover();
+      right4BallFast();
+      // chassis.set_heading(-90); 
+      // skillsCrossover();
       break;
     case 7:
-      chassis.set_heading(90); 
-      RBCrossover(); 
+      // chassis.set_heading(90); 
+      // RBCrossover(); 
       break;
   }
 }

@@ -25,6 +25,8 @@ void right7BallPush();
 void right7BallFast();
 void left7BallFast();  
 void leftAWP(); 
+void soloAWP();
+void right4BallFast();
 
 void skills();
 void postCrossScore(); 

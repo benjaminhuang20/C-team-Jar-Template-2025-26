@@ -33,7 +33,7 @@ bool isIntaking = true;
 
 bool auto_started = false;
 
-int current_auton_selection = 0;
+int current_auton_selection =1;
 
 bool isRed = true; 
 
