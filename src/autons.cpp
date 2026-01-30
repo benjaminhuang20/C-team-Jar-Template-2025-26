@@ -76,7 +76,7 @@ int antiJamIntake()
     if(isIntaking){
       if (bottomIntake.current() > 0 && bottomIntake.efficiency() == 0)
       {
-        bottomIntake.spin(reverse, 90, pct);
+        bottomIntake.spin(vex::reverse, 90, pct);
       }
       else
       {
@@ -94,7 +94,7 @@ int antiJamTaskFast()
     if(isIntaking){
       if (bottomIntake.current() > 0 && bottomIntake.efficiency() == 0)
       {
-        bottomIntake.spin(reverse, 127, pct);
+        bottomIntake.spin(vex::reverse, 127, pct);
       }
       else
       {
@@ -129,7 +129,7 @@ void awp_right() {
   // chassis.drive_distance(2);
   task::sleep(4000);
   intakeTask2.stop();
-  // bottomIntake.spin(reverse, 127, pct);
+  // bottomIntake.spin(vex::reverse, 127, pct);
   bottomIntake.spin(fwd, 127, pct);
   // intakeTask.stop()
   chassis.turn_to_angle(180);
@@ -164,7 +164,7 @@ void notAwp_left(){
   // chassis.drive_distance(2);
   task::sleep(4000);
   intakeTask2.stop();
-  // bottomIntake.spin(reverse, 127, pct);
+  // bottomIntake.spin(vex::reverse, 127, pct);
   bottomIntake.spin(fwd, 127, pct);
   // intakeTask.stop()
   chassis.turn_to_angle(180);
@@ -244,7 +244,7 @@ int intakeAntiJamTask(){
     double efficiency = bottomIntake.efficiency(); 
 
     if(voltage > 0 && efficiency == 0){
-      bottomIntake.spin(reverse, 12, volt); 
+      bottomIntake.spin(vex::reverse, 12, volt); 
     } else{
       bottomIntake.spin(fwd, 12, volt);
     }
@@ -262,7 +262,7 @@ int TopintakeAntiJamTask(){
     double efficiency = topIntake.efficiency(); 
 
     if(voltage > 0 && efficiency == 0){
-      topIntake.spin(reverse, 12, volt); 
+      topIntake.spin(vex::reverse, 12, volt); 
     } else{
       topIntake.spin(fwd, 12, volt);
     }
@@ -300,7 +300,7 @@ void right7BallPush(){
   descore.set(false);
   hood.set(false);
 
-  topIntake.spin(reverse, 0, volt);
+  topIntake.spin(vex::reverse, 0, volt);
   // bottomIntake.spin(fwd, 12, volt);
   task intakeTask = task(intakeAntiJamTask);
   
@@ -315,9 +315,9 @@ void right7BallPush(){
   chassis.set_drive_constants(8, 1.4, 0, 12, 0);
   // chassis.drive_distance(33.85);
   chassis.drive_distance(34.75);
-  // bottomIntake.spin(reverse, 1, volt);
+  // bottomIntake.spin(vex::reverse, 1, volt);
   chassis.turn_to_angle(180);
-  // bottomIntake.spin(reverse, 12, volt);
+  // bottomIntake.spin(vex::reverse, 12, volt);
   chassis.set_drive_constants(4, 1.4, 0, 12, 0);
   // chassis.drive_distance_timeout(12.5, 1000);
   chassis.drive_distance_timeout(13.5, 1000);
@@ -343,10 +343,12 @@ void right7BallPush(){
 
   //push
   // chassis.set_drive_constants(12, 1.4, 0, 12, 0);
-  // chassis.drive_distance(10, 245);
+  chassis.drive_distance(10);
+  chassis.turn_to_angle(120);
+  chassis.drive_distance(-30, 180); 
   // chassis.drive_distance(-30, 180);
   // bottomIntake.spin(fwd, 12, volt);
-  // topIntake.spin(reverse, 10, volt);
+  // topIntake.spin(vex::reverse, 10, volt);
 }
 
 void right7BallFast(){
@@ -372,7 +374,7 @@ void right7BallFast(){
 
   chassis.set_drive_constants(9, 1.5, 0, 10, 0);
   chassis.drive_distance_timeout(-28, 1000); 
-  topIntake.spin(reverse,12,volt);
+  topIntake.spin(vex::reverse,12,volt);
   wait(0.3,sec);
   topIntake.spin(fwd,12,volt);
   wait(3.7,sec);
@@ -380,7 +382,11 @@ void right7BallFast(){
   chassis.turn_to_angle(180);
 
   // //push
-  // descore = false;
+  descore = false;
+  chassis.drive_distance(10);
+  chassis.turn_to_angle(120);
+  chassis.drive_distance(-30, 180); 
+  
   // scraper = false;
   // chassis.drive_distance(10,-90);
   // chassis.drive_distance(9.5);
@@ -413,7 +419,7 @@ void leftAWP(){
   descore.set(false);
   hood.set(false);
 
-  topIntake.spin(reverse, 0, volt); 
+  topIntake.spin(vex::reverse, 0, volt); 
   task intakeTask = task(intakeAntiJamTask); 
   bottomIntake.spin(fwd, 12, volt);
   
@@ -487,13 +493,16 @@ void skills(){
   descore = true;
   chassis.set_drive_constants(10, 1.4, 0, 12, 0);
   task intakeTask = task(intakeAntiJamTask);
-  topIntake.spin(reverse, 0, volt);
+  topIntake.spin(vex::reverse, 0, volt);
   chassis.drive_distance(36);
   chassis.turn_to_angle(90);
-  chassis.set_drive_constants(6, 1.4, 0, 12, 0);
-  chassis.drive_distance_timeout(10.5, 500);
-  // chassis.drive_distance_timeout(11.5, 500);
-  wait(3, sec); 
+  // chassis.set_drive_constants(6, 1.4, 0, 12, 0);
+
+  chassis.drive_settle_error = -1;
+  chassis.drive_timeout = 2500; 
+  chassis.drive_distance_from_front_wall(8.75);
+
+  chassis.drive_settle_error = 0.5; 
   chassis.set_drive_constants(10, 1.4, 0, 12, 0);
   // chassis.turn_to_angle(90);
   topIntake.spin(fwd, 0, volt);
@@ -509,7 +518,7 @@ void skills(){
 
   // scraper = true;
   // hood = false;
-  // topIntake.spin(reverse, 0, volt);
+  // topIntake.spin(vex::reverse, 0, volt);
   // intakeTask = task(intakeAntiJamTask); 
   // chassis.set_drive_constants(6, 1.4, 0, 12, 0);
   // chassis.drive_distance_timeout(20.5,1000);
@@ -543,12 +552,14 @@ void postCrossScore(){
   scraper.set(true);
   wait(4.25, sec);
   chassis.turn_to_angle(-90);
-  chassis.set_drive_constants(6, 1.4, 0, 12, 0);
-  // chassis.drive_distance_timeout(29, 1400);//take from scraper 
-  chassis.drive_distance_timeout(29.25, 1400);//take from scraper 
-  topIntake.spin(reverse, 0, volt); //store
-  hood.set(false);
-  wait(3, sec);
+
+  topIntake.spin(vex::reverse, 0, volt); //store 
+
+  chassis.drive_settle_error = -1;
+  chassis.drive_timeout = 3000; 
+  chassis.drive_distance_from_front_wall(8.75);
+  chassis.drive_settle_error = 0.5;
+
   intakeTask.stop();
   topIntake.spin(fwd, 0, volt);
   bottomIntake.spin(fwd, 0, volt); //stop intake motors
@@ -579,18 +590,18 @@ void skillsCrossover(){
 
   chassis.set_turn_exit_conditions(1, 150, 2000);
   chassis.turn_to_angle(-90); 
-  chassis.set_heading(90); 
+  chassis.set_heading(180 - chassis.get_absolute_heading()); 
 
-  topIntake.spin(reverse, 0, volt);
+  topIntake.spin(vex::reverse, 0, volt);
   task intakeTask = task(intakeAntiJamTask); 
-  chassis.set_drive_constants(5, 1.4, 0, 12, 0);
-  chassis.drive_distance_timeout(23.25,1000);
+
+  chassis.drive_settle_error = -1;
+  chassis.drive_timeout = 3000; 
+  chassis.drive_distance_from_front_wall(8.75);
+  chassis.drive_settle_error = 0.5;
+
   chassis.turn_to_angle(90); 
   chassis.set_turn_exit_conditions(2.5, 150, 2000);
-  // chassis.gyro_scale *= -1; 
-  
-  // chassis.set_heading(chassis.get_absolute_heading()* (-1));
-  wait(3, sec);
 }
 
 void RBCrossover(){  
@@ -722,7 +733,7 @@ void right4BallFast(){
   descore.set(false);
   hood.set(false);
 
-  topIntake.spin(reverse, 0, volt); 
+  topIntake.spin(vex::reverse, 0, volt); 
   task intakeTask = task(intakeAntiJamTask); 
   bottomIntake.spin(fwd, 12, volt);
 

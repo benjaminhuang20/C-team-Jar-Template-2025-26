@@ -23,7 +23,7 @@ extern digital_out hood;
 
 extern optical intakeColor;
 
-extern distance rearDistance;
+// extern distance rearDistance;
 
 extern bool isIntaking;
 

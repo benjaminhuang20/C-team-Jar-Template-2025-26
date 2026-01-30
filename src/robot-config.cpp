@@ -27,8 +27,8 @@ digital_out hood = digital_out(Brain.ThreeWirePort.A);
 // Color sensor mounted on the intake.
 optical intakeColor = optical(PORT19);
 
-distance rearDistance = distance(PORT12);
-distance frontDistance = distance(PORT1);
+// distance rearDistance = distance(PORT12);
+// distance frontDistance = distance(PORT1);
 
 bool isIntaking = true;
 

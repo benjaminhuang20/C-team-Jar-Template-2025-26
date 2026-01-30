@@ -103,8 +103,8 @@ Drive chassis(
     // Sideways tracker center distance (positive distance is behind the center of the robot, negative is in front):
     -5.75,
 
-    distance(PORT5),
-    distance(PORT5)
+    vex::distance(PORT19),
+    vex::distance(PORT5)
 
 );
 

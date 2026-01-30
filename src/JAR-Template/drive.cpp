@@ -29,7 +29,7 @@ Drive::Drive(enum::drive_setup drive_setup, motor_group DriveL, motor_group Driv
 int gyro_port, float wheel_diameter, float wheel_ratio, float gyro_scale, 
 int DriveLF_port, int DriveRF_port, int DriveLB_port, int DriveRB_port, 
 int ForwardTracker_port, float ForwardTracker_diameter, float ForwardTracker_center_distance, 
-int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_center_distance, distance backDistance, distance frontDistance) :
+int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_center_distance, vex::distance backDistance, vex::distance frontDistance) :
   wheel_diameter(wheel_diameter),
   wheel_ratio(wheel_ratio),
   gyro_scale(gyro_scale),
@@ -479,7 +479,7 @@ void Drive::right_swing_to_angle(float angle, float swing_max_voltage, float swi
     float error = reduce_negative_180_to_180(angle - get_absolute_heading());
     float output = swingPID.compute(error);
     output = clamp(output, -turn_max_voltage, turn_max_voltage);
-    DriveR.spin(reverse, output, volt);
+    DriveR.spin(vex::reverse, output, volt);
     DriveL.stop(hold);
     task::sleep(10);
   }
