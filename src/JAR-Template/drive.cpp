@@ -29,7 +29,7 @@ Drive::Drive(enum::drive_setup drive_setup, motor_group DriveL, motor_group Driv
 int gyro_port, float wheel_diameter, float wheel_ratio, float gyro_scale, 
 int DriveLF_port, int DriveRF_port, int DriveLB_port, int DriveRB_port, 
 int ForwardTracker_port, float ForwardTracker_diameter, float ForwardTracker_center_distance, 
-int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_center_distance, distance backDistance) :
+int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_center_distance, distance backDistance, distance frontDistance) :
   wheel_diameter(wheel_diameter),
   wheel_ratio(wheel_ratio),
   gyro_scale(gyro_scale),
@@ -52,7 +52,8 @@ int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_
   R_SidewaysTracker(SidewaysTracker_port),
   E_ForwardTracker(ThreeWire.Port[to_port(ForwardTracker_port)]),
   E_SidewaysTracker(ThreeWire.Port[to_port(SidewaysTracker_port)]),
-  backDistance(backDistance)
+  backDistance(backDistance),
+  frontDistance(frontDistance)
 {
     if (drive_setup == TANK_ONE_FORWARD_ENCODER || drive_setup == TANK_ONE_FORWARD_ROTATION || drive_setup == ZERO_TRACKER_ODOM){
       odom.set_physical_distances(ForwardTracker_center_distance, 0);
@@ -352,6 +353,29 @@ void Drive::drive_distance_from_wall(float distance, float heading, float drive_
   }
 }
 
+void Drive::drive_distance_from_front_wall(float distance){
+  drive_distance_from_front_wall(distance, get_absolute_heading(), drive_max_voltage, heading_max_voltage, drive_settle_error, drive_settle_time, drive_timeout, drive_kp, drive_ki, drive_kd, drive_starti, heading_kp, heading_ki, heading_kd, heading_starti);
+}
+
+void Drive::drive_distance_from_front_wall(float distance, float heading, float drive_max_voltage, float heading_max_voltage, float drive_settle_error, float drive_settle_time, float drive_timeout, float drive_kp, float drive_ki, float drive_kd, float drive_starti, float heading_kp, float heading_ki, float heading_kd, float heading_starti){
+  PID drivePID(distance, drive_kp, drive_ki, drive_kd, drive_starti, drive_settle_error, drive_settle_time, drive_timeout);
+  PID headingPID(reduce_negative_180_to_180(heading - get_absolute_heading()), heading_kp, heading_ki, heading_kd, heading_starti);
+  float average_position = frontDistance.objectDistance(vex::distanceUnits::in);
+  while(drivePID.is_settled() == false){
+    average_position = frontDistance.objectDistance(vex::distanceUnits::in);
+    // float drive_error = distance+start_average_position-average_position;
+    float drive_error = -(distance - average_position); 
+    float heading_error = reduce_negative_180_to_180(heading - get_absolute_heading());
+    float drive_output = drivePID.compute(drive_error);
+    float heading_output = headingPID.compute(heading_error);
+
+    drive_output = clamp(drive_output, -drive_max_voltage, drive_max_voltage);
+    heading_output = clamp(heading_output, -heading_max_voltage, heading_max_voltage);
+
+    drive_with_voltage(drive_output+heading_output, drive_output-heading_output);
+    task::sleep(10);
+  }
+}
 
 
 void Drive::drive_distance_customFunct(float distance, std::vector<float> triggerDistances, std::vector<std::function<void()>> actions){

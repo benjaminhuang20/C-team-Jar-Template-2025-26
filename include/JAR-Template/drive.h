@@ -39,7 +39,8 @@ public:
   rotation R_SidewaysTracker;
   encoder E_ForwardTracker;
   encoder E_SidewaysTracker;
-  distance backDistance; 
+  distance backDistance;
+  distance frontDistance; 
 
   float turn_max_voltage;
   float turn_kp;
@@ -81,7 +82,7 @@ public:
   float boomerang_lead;
   float boomerang_setback;
 
-  Drive(enum::drive_setup drive_setup, motor_group DriveL, motor_group DriveR, int gyro_port, float wheel_diameter, float wheel_ratio, float gyro_scale, int DriveLF_port, int DriveRF_port, int DriveLB_port, int DriveRB_port, int ForwardTracker_port, float ForwardTracker_diameter, float ForwardTracker_center_distance, int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_center_distance, distance backDistance);
+  Drive(enum::drive_setup drive_setup, motor_group DriveL, motor_group DriveR, int gyro_port, float wheel_diameter, float wheel_ratio, float gyro_scale, int DriveLF_port, int DriveRF_port, int DriveLB_port, int DriveRB_port, int ForwardTracker_port, float ForwardTracker_diameter, float ForwardTracker_center_distance, int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_center_distance, distance backDistance, distance frontDistance);
 
   void drive_with_voltage(float leftVoltage, float rightVoltage);
 
@@ -120,6 +121,9 @@ public:
 
   void drive_distance_from_wall(float distance); 
   void drive_distance_from_wall(float distance, float heading, float drive_max_voltage, float heading_max_voltage, float drive_settle_error, float drive_settle_time, float drive_timeout, float drive_kp, float drive_ki, float drive_kd, float drive_starti, float heading_kp, float heading_ki, float heading_kd, float heading_starti);
+
+  void drive_distance_from_front_wall(float distance); 
+  void drive_distance_from_front_wall(float distance, float heading, float drive_max_voltage, float heading_max_voltage, float drive_settle_error, float drive_settle_time, float drive_timeout, float drive_kp, float drive_ki, float drive_kd, float drive_starti, float heading_kp, float heading_ki, float heading_kd, float heading_starti);
 
 
   void drive_distance_chained(std::vector<float> distances, std::vector<float> distanceCutoff, std::vector<float> headings, std::vector<float> headingCutoff); 

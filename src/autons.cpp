@@ -358,9 +358,16 @@ void right7BallFast(){
   chassis.drive_distance(-39.5,-90); 
 
   chassis.turn_to_angle(180); 
-  chassis.set_drive_constants(6, 1.5, 0, 10, 0);
-  chassis.drive_distance_timeout(12.6, 1000); 
-  wait(0.7,sec); 
+  // chassis.set_drive_constants(6, 1.5, 0, 10, 0);
+  // chassis.drive_distance_timeout(12.6, 1000); 
+  chassis.drive_settle_error = -1;
+  chassis.drive_timeout = 2000; 
+  chassis.drive_distance_from_front_wall(8.75);
+
+  // wait(0.7,sec);
+  chassis.drive_settle_error = 0.5; 
+  chassis.drive_timeout = 5000; 
+
   chassis.turn_to_angle(180); //around half second so it adds to the wait time :D
 
   chassis.set_drive_constants(9, 1.5, 0, 10, 0);
@@ -372,16 +379,16 @@ void right7BallFast(){
   topIntake.spin(fwd,0,volt);
   chassis.turn_to_angle(180);
 
-  //push
-  descore = false;
-  scraper = false;
-  chassis.drive_distance(10,-90);
-  chassis.drive_distance(9.5);
-  chassis.turn_to_angle(0);
-  chassis.drive_distance(29);
+  // //push
+  // descore = false;
+  // scraper = false;
+  // chassis.drive_distance(10,-90);
+  // chassis.drive_distance(9.5);
+  // chassis.turn_to_angle(0);
+  // chassis.drive_distance(29);
 
-  chassis.DriveL.stop(brakeType::brake); 
-  chassis.DriveR.stop(brakeType::brake);
+  // chassis.DriveL.stop(brakeType::brake); 
+  // chassis.DriveR.stop(brakeType::brake);
 }
 
 void left7BallFast(){

@@ -15,7 +15,7 @@
 #include <string.h>
 #include <algorithm>
 #include <vector>
-#include<functional>
+#include <functional>
 
 #include "v5.h"
 #include "v5_vcs.h"
@@ -26,6 +26,8 @@
 #include "JAR-Template/util.h"
 #include "JAR-Template/PID.h"
 #include "autons.h"
+
+using namespace std; 
 
 #define waitUntil(condition)                                                   \
   do {                                                                         \
